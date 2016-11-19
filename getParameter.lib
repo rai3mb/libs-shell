@@ -1,3 +1,5 @@
+#By: Raimundo Portela <rai3mb@gmail.com>
+
 _getParameter() {
 	X="$1"
 	while shift
