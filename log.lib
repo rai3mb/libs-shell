@@ -1,0 +1,17 @@
+#By: Raimundo Portela <rai3mb@gmail.com>
+# Just load in your scripts
+# source log.lib
+# and write your log with _log "this is a text for log"
+#==============================================
+
+HOJE=$(date +'%Y%m%d') # current date
+DIR_LOG=/var/scripts/logs/$HOJE # directory for logs
+LOG_DESTINO=$DIR_LOG/${0##*/}_${HOSTNAME}_$HOJE.log # arquivo de log para o script corrent
+
+[ ! -d $DIR_LOG ] && mkdir -p $DIR_LOG && chmod 2777 $DIR_LOG # cria o diretorio de logs
+exec 2> >(tee -a "$LOG_DESTINO") # copia a saida de erros para o arquivo
+
+# funcao para registrar comentarios no log
+_log() {
+        echo "$(date +'%Y-%m-%d %H:%M:%S')|$1" >> $LOG_DESTINO
+}
