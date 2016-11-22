@@ -16,18 +16,18 @@ ARQ_BKP_SQL="$DIR_LOG/sql_${HOSTNAME}_$HOJE.bkp"
 source /opt/scripts/log.lib
 
 _trataQuery() {
-        SQL=$( echo "$1" | tr '\n' ' ')
-        echo $SQL | egrep -q 'DELETE|UPDATE' && echo $SQL | egrep -vq 'WHERE' && _log "SQL INVALIDA|$SQL" && exit
-        echo $SQL | egrep -q 'DELETE|UPDATE|INSERT' && _log "$SQL"
-        echo $SQL | egrep -q 'DELETE ' && SQL_BKP=$(echo $SQL | egrep -o 'FROM.*') && psql -h $HOST_BANCO -p $PORTA -d $BANCO -U $USUARIO -t -c "SELECT * $SQL_BKP" >> $ARQ_BKP_SQL && _log "BKP EM $ARQ_BKP_SQL"
-        echo "$1"
+    SQL=$( echo "$1" | tr '\n' ' ')
+    echo $SQL | egrep -q 'DELETE|UPDATE' && echo $SQL | egrep -vq 'WHERE' && _log "SQL INVALIDA|$SQL" && exit
+    echo $SQL | egrep -q 'DELETE|UPDATE|INSERT' && _log "$SQL"
+    echo $SQL | egrep -q 'DELETE ' && SQL_BKP=$(echo $SQL | egrep -o 'FROM.*') && psql -h $HOST_BANCO -p $PORTA -d $BANCO -U $USUARIO -t -c "SELECT * $SQL_BKP" >> $ARQ_BKP_SQL && _log "BKP EM $ARQ_BKP_SQL"
+    echo "$1"
 }
 
 _executeQueryWithSpaces() {
-        SQL=$(_trataQuery "$1")
-        psql -h $HOST_BANCO -p $PORTA -d $BANCO -U $USUARIO -t -c "$SQL" | egrep -v '^$'
+    SQL=$(_trataQuery "$1")
+    psql -h $HOST_BANCO -p $PORTA -d $BANCO -U $USUARIO -t -c "$SQL" | egrep -v '^$'
 }
 
 _executeQuery() {
-        _executeQueryWithSpaces "$1" | tr -d ' '
+    _executeQueryWithSpaces "$1" | tr -d ' '
 }

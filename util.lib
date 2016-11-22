@@ -1,9 +1,10 @@
+#!/bin/bash
 #By: Raimundo Portela <rai3mb@gmail.com>
 
-_getParameter() {
+_getParam() {
 	X="$1"
 	while shift
-	do 
+	do
 		if [ "$1" = "$X" ]; then
 			[ "$2" ] && echo "$2" && return 0 || return 1
 		fi
