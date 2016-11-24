@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# cut video / split video 
+# need file and start/end part
+#==================================
 VIDEO="$1"
 [ -f "$VIDEO" ] || exit 1
 START="$2"
