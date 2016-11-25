@@ -1,0 +1,50 @@
+#!/bin/bash
+# By: Portela <c089612@mail.caixa>
+# Need: jq, mongoclient
+#==================================================
+FONTE=/opt/scripts
+HOST="localhost"
+BANCO="banco"
+source $FONTE/log.lib
+#====================================================
+MONGO_URI="mongo "$HOST/$BANCO" --quiet --eval"
+
+_mongoReplace() {
+	local COLECAO="$1"
+	local ALVO="$2"
+	local DOCUMENTO="$3"
+	[ -z "$COLECAO" -o -z "$ALVO" ] && return 1
+	$MONGO_URI "db.${COLECAO:-xx}.replaceOne($ALVO, $DOCUMENTO)"
+}
+
+_mongoInsert() {
+	local COLECAO="$1"
+	local DOCUMENTO="$2"
+	[ -z "$COLECAO" -o -z "$DOCUMENTO" ] && return 1
+	$MONGO_URI "db.${COLECAO:-xx}.insert($DOCUMENTO)"
+}
+
+_mongoFind() {
+	local COLECAO="$1"
+	local ALVO="$2"
+	local EXTRA="$3"
+	[ -z "$COLECAO" ] && return 1
+	$MONGO_URI "db.${COLECAO:-xx}.find($ALVO,{_id:0})${EXTRA}"
+}
+
+_mongoInsertOrReplace() {
+	local COLECAO="$1"
+	local ALVO="$2"
+	local DOCUMENTO="$3"
+	[ -z "$COLECAO" -o -z "$DOCUMENTO" -o -z "$ALVO" ] && return 1
+	RS=$(_mongoFind $COLECAO $ALVO)
+	if [ "$RS" ]; then
+		_mongoReplace $COLECAO $ALVO "$DOCUMENTO"
+	else
+		_mongoInsert $COLECAO "$DOCUMENTO"
+	fi
+}
+
+_getValor() {
+	_mongoFind "$1" "$2" | jq .${3} | sed 's/"//g'
+}
