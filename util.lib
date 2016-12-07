@@ -16,10 +16,20 @@ _getDate() {
 	date +'%Y%m%d'
 }
 
-_setInExec() {
+__setInExec() {
 	local P=$(_getPID)
-	[ ${P:-0} -eq 0 ] && echo "$$|$(date +%s)" > /var/run/scripts/${0##/}.pid && return 0
+        [ ${P:-0} -eq 0 ] && echo "$$|$(date +%s)" > /var/run/scripts/${0##/}.pid && return 0
+	return 1
+}
+_setInExec() {
+	__setInExec && return 0
 	echo "${0##/} in execution with pid |$P" && exit 1
+}
+
+_setInExecForce() {
+	local P=$(_getPID)
+        [ ${P:-0} -ne 0 ] && kill -9 $P
+	__setInExec
 }
 
 _getPID() {
