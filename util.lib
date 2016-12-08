@@ -1,9 +1,10 @@
 #!/bin/bash
 #By: Raimundo Portela <rai3mb@gmail.com>
-_loadLibs() {
+_import() {
 	local FONTE=/opt/scripts/libs
 	while : ; do
-		[ -f $FONTE/${1:-aa}.lib ] && source $FONTE/${1:-aa}.lib || return 1
+		[ -z "$1" ] && break
+		[ -f $FONTE/${1}.lib ] && source $FONTE/${1:-aa}.lib || return 1
 		shift
 	done
 }

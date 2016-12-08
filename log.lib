@@ -1,6 +1,7 @@
 #!/bin/bash
 #By: Raimundo Portela <rai3mb@gmail.com>
-source /opt/scripts/libs/date.lib || exit 1
+source "/opt/scripts/libs/util.lib"
+_import date || return 1
 HOJE=$(_dateNum)
 DIR_LOG=/opt/scripts/logs/$HOJE # directory for logs
 LOG_DESTINO=$DIR_LOG/$(basename "$0")_${HOSTNAME}_$HOJE.log # arquivo de log para o script corrent
@@ -10,5 +11,5 @@ exec 2> >(tee -a "$LOG_DESTINO") # copia a saida de erros para o arquivo
 
 # funcao para registrar comentarios no log
 _log() {
-        echo "$1" && echo "$(date +'%Y-%m-%d %H:%M:%S')|$1" >> $LOG_DESTINO
+    echo "$1" && echo "$(_now)|$1" >> $LOG_DESTINO
 }

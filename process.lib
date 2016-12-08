@@ -1,31 +1,35 @@
 #!/bin/bash
-FILE_NAME=$(basename $0)
-FILE_RUN=/opt/scripts/run/${FILE_NAME}_${HOSTNAME}.pid
-PID_RUN=0
+_FILE_NAME=$(basename $0)
+_FILE_RUN=/opt/scripts/run/${_FILE_NAME}_${HOSTNAME}.pid
+_P=0
 __setInExec() {
-	PID_RUN=$(_getPID)
-    [ ${PID_RUN:-0} -eq 0 ] && echo "$$|$(date +'%Y-%m-%d %H:%M:%S')" > "$FILE_RUN" && return 0
-	echo "$FILE_NAME in execution with pid |$PID_RUN"; return 1
+	_P=$(_getPID)
+    [ ${_P:-0} -eq 0 ] && echo "$$|$(date +'%Y-%m-%d %H:%M:%S')" > "$_FILE_RUN" && return 0
+	echo "$_FILE_NAME in execution with pid |$_P"; return 1
 }
 _begin() {
 	__setInExec || exit 1
 }
 
 _end() {
-	[ -f "$FILE_RUN" ] && rm "$FILE_RUN"
+	[ -f "$_FILE_RUN" ] && rm "$_FILE_RUN"
 }
 
 _beginForce() {
 	#permite a execution, eliminando a anterior
-	PID_RUN=$(_getPID)
-    [ ${PID_RUN:-0} -ne 0 ] && kill -9 $PID_RUN && _end
+	_P=$(_getPID)
+    [ ${_P:-0} -ne 0 ] && kill -9 $_P && _end
 	_begin
 }
 
 _getPID() {
-	[ ! -f "$FILE_RUN" ] && echo 0 && return 1
-    PID_RUN=$(cat "$FILE_RUN" | cut -d'|' -f1) # pega o pid registrado para o processo
-	echo "$(ps -p ${PID_RUN:-xx} -o cmd= 2>/dev/null)" | fgrep -q "$FILE_NAME" && echo $PID_RUN || echo 0
+	[ ! -f "$_FILE_RUN" ] && echo 0 && return 1
+    _P=$(cat "$_FILE_RUN" | cut -d'|' -f1) # pega o pid registrado para o processo
+	echo "$(ps -p ${_P:-xx} -o cmd= 2>/dev/null)" | fgrep -q "$_FILE_NAME" && echo $_P || echo 0
+}
+
+_getTimePID() {
+	ps -p $(_getPID) -o time=
 }
 
 _checkInExec() {
