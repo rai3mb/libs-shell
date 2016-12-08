@@ -1,5 +1,6 @@
 #!/bin/bash
 #By: Raimundo Portela <rai3mb@gmail.com>
+source /opt/scripts/libs/date.lib
 
 _getParam() {
 	X="$1"
@@ -10,34 +11,4 @@ _getParam() {
 		fi
 	done
 	return 1
-}
-
-_getDate() {
-	date +'%Y%m%d'
-}
-
-__setInExec() {
-	local P=$(_getPID)
-        [ ${P:-0} -eq 0 ] && echo "$$|$(date +%s)" > /var/run/scripts/${0##/}.pid && return 0
-	return 1
-}
-_setInExec() {
-	__setInExec && return 0
-	echo "${0##/} in execution with pid |$P" && exit 1
-}
-
-_setInExecForce() {
-	local P=$(_getPID)
-        [ ${P:-0} -ne 0 ] && kill -9 $P
-	__setInExec
-}
-
-_getPID() {
-	[ ! -f /var/run/scripts/${0##/}.pid ] && echo 0
-        local PID=$(cat /var/run/scripts/${0##/}.pid | cut -d'|' -f1) # pega o pid registrado para o processo
-	echo "$(ps -p ${PID:-xx} -o cmd= 2>/dev/null)" | fgrep -q "${0##/}" && echo $PID || echo 0
-}
-
-_checkInExec() {
-	[ $(_getPID) -eq 0 ] && return 1 || return 0
 }
