@@ -1,3 +1,4 @@
 #!/bin/bash
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
 _date() { _now | cut -d' ' -f1; }
+_dateNum() { date +'%Y%m%d'; }

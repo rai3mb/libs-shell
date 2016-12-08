@@ -1,6 +1,12 @@
 #!/bin/bash
 #By: Raimundo Portela <rai3mb@gmail.com>
-source /opt/scripts/libs/date.lib
+_loadLibs() {
+	local FONTE=/opt/scripts/libs
+	while : ; do
+		[ -f $FONTE/${1:-aa}.lib ] && source $FONTE/${1:-aa}.lib || return 1
+		shift
+	done
+}
 
 _getParam() {
 	X="$1"
