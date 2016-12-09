@@ -11,11 +11,13 @@ _import() {
 
 _getParam() {
 	X="$1"
-	while shift
-	do
-		if [ "$1" = "$X" ]; then
+	while shift; do
+		[ "$1" = "$X" ] && {
 			[ "$2" ] && echo "$2" && return 0 || return 1
-		fi
+		}
 	done
 	return 1
+}
+_getVAR() {
+	egrep "^$1=" /opt/scripts/global.var | tail -n1 | cut -d'=' -f2
 }
