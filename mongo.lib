@@ -1,12 +1,13 @@
 #!/bin/bash
 # By: Portela <c089612@mail.caixa>
-# Need: jq, mongoclient
+# Need: jq, mongo
 #==================================================
-source /opt/scripts/libs/util.lib || return 1
-#====================================================
+_checkDependences 'mongo' 2>/dev/null || {
+	source /opt/scripts/libs/util.lib && _checkDependences 'mongo' || return 1
+}
 _MONGO_URI="mongo "$(_getVAR MONGO_PROD)" --quiet --eval"
-_mongoChangeURI() {
-	[ "$1" ] && _MONGO_URI="mongo "$(_getVAR $1)" --quiet --eval" || return 1
+_setMongoURI() {
+	[ "$1" ] && _MONGO_URI="mongo $1 --quiet --eval" || return 1
 }
 
 _mongoReplace() {
@@ -29,7 +30,7 @@ _mongoFind() {
 	local ALVO="$2"
 	local EXTRA="$3"
 	[ -z "$COLECAO" -o -z "$ALVO" ] && return 1
-	$_MONGO_URI "db.${COLECAO:-xx}.find($ALVO,{_id:0})${EXTRA:-.limit(10).forEach(printjson)}"
+	$_MONGO_URI "db.${COLECAO:-xx}.find($ALVO,{_id:0})${EXTRA:-.limit(1).forEach(printjson)}"
 }
 
 _mongoInsertOrReplace() {

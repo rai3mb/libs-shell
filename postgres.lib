@@ -1,0 +1,46 @@
+#!/bin/bash
+# Raimundo Portela <rai3mb@gmail.com>
+#==============================
+_checkDependences 'psql' 2>/dev/null || {
+    source /opt/scripts/libs/util.lib && _checkDependences 'psql' || return 1
+}
+_import 'log'
+_setVAR 'POST'
+_PSQL_URI="psql $_RS -t -c"
+_setVAR 'POST_PASS'
+_PGPASSWORD=$_RS
+#================================
+_bkpDELETE() {
+    local SQL="$1"
+    HOJE=$(date +'%Y%m%d')
+    _DIR_BKP="/opt/scripts/bkp/$HOJE"
+    [ ! -d $_DIR_BKP ] && mkdir -p $_DIR_BKP && chmod 2777 $_DIR_BKP
+    _ARQ_BKP_SQL="$_DIR_BKP/sql_${HOSTNAME}_$HOJE.bkp"
+    SQL_BKP=$(echo $SQL | egrep -io 'FROM.*')
+    [ "$SQL_BKP" ] && $_PSQL_URI "SELECT * $SQL_BKP" >> $_ARQ_BKP_SQL && _log "BKP EM $_ARQ_BKP_SQL" && return 0
+    return 1
+}
+
+_trataQuery() {
+    export PGPASSWORD=$_PGPASSWORD
+    local SQL=$( echo "$1" | tr '\n' ' ')
+    if echo "$SQL" | egrep -iq 'DELETE|UPDATE|INSERT' && _log "$SQL"; then
+        if echo "$SQL" | egrep -iq 'DELETE|UPDATE' && echo "$SQL" | egrep -viq 'WHERE'; then
+                _log "SQL INVALIDA|$SQL"
+                return 1
+        fi
+        echo "$SQL" | egrep -iq 'DELETE ' && _bkpDELETE "$SQL" || return 1
+    fi
+    echo "$SQL"
+}
+
+_executeQueryWithSpaces() {
+    local SQL=$(_trataQuery "$1")
+    [ "$SQL" ] && $_PSQL_URI "$SQL" | egrep -v '^$' || _die "QUERY"
+}
+
+_executeQuery() { _executeQueryWithSpaces "$1" | tr -d ' '; }
+
+_setPostgresURI() {
+    [ "$1" -a "$2" ] && _PSQL_URI="psql $1 -t -c" && _PGPASSWORD="$2" || _die "params for $FUNCNAME"
+}
