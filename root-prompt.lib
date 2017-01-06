@@ -1,0 +1,17 @@
+#!/bin/bash
+# input in /etc/bashrc
+function setprompt
+  {
+      local BLUE='\[$(tput setaf 4)\]'
+      local RED='\[$(tput setaf 1)\]'
+      local RESET='\[$(tput sgr0)\]'
+      # Se 'id -u' retornar 0, você tem
+      # privilégios de superusuário
+      if [ `id -u` = 0 ]
+          then
+              PS1="$RED[\u@\h:\W]$RESET "
+          else
+              PS1="$BLUE[\u@\h:\W]$RESET "
+      fi
+  }
+  setprompt

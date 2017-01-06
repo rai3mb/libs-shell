@@ -5,7 +5,7 @@ _import 'date' 2>/dev/null || {
 }
 HOJE=$(_dateNum)
 _setVAR 'DIR_LOGS'
-_DIR_LOG="$_RS/$HOJE" # directory for logs
+_DIR_LOG="$DIR_LOGS/$HOJE" # directory for logs
 [ ! -d $_DIR_LOG ] && mkdir -p $_DIR_LOG && chmod 2777 $_DIR_LOG # cria o diretorio de logs
 
 _LOG_DESTINO=$_DIR_LOG/$(basename "$0")_${HOSTNAME}_$HOJE.log # arquivo de log para o script corrent

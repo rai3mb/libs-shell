@@ -5,15 +5,15 @@ _RS=''
 _CONF_FILE=/opt/scripts/scripts.conf
 _import() {
 	_setVAR 'DIR_LIBS'
-	local D=$_RS
+	_dir "$DIR_LIBS"
 	while : ; do
 		[ -z "$1" ] && break
-		_source "$D/${1}.lib"
+		_source "$DIR_LIBS/${1}.lib"
 		shift
 	done
 }
 _source() { _file "$1" && source "$1"; }
-_setVAR() { _getVAR "$1" >/dev/null; [ -z "$_RS" ] && _notFound "$1"; }
+_setVAR() { eval "${1}='$(_getVAR $1)'"; }
 _getParam() {
 	X="$1"
 	while shift; do

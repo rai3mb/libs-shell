@@ -6,9 +6,9 @@ _checkDependences 'psql' 2>/dev/null || {
 }
 _import 'log'
 _setVAR 'POST'
-_PSQL_URI="psql $_RS -t -c"
+_PSQL_URI="psql $POST -t -c"
 _setVAR 'POST_PASS'
-_PGPASSWORD=$_RS
+_PGPASSWORD=$POST_PASS
 #================================
 _bkpDELETE() {
     local SQL="$1"

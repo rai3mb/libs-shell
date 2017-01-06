@@ -1,11 +1,12 @@
 #!/bin/bash
 _FILE_NAME=$(basename $0)
-_FILE_RUN=/opt/scripts/run/${_FILE_NAME}_${HOSTNAME}.pid
+_DIR_RUN=/opt/scripts/run
+_FILE_RUN=$_DIR_RUN/${_FILE_NAME}_${HOSTNAME}.pid
 _P=0
 __setInExec() {
 	_P=$(_getPID)
-    [ ${_P:-0} -eq 0 ] && echo "$$|$(date +'%Y-%m-%d %H:%M:%S')" > "$_FILE_RUN" && return 0
-	echo "$_FILE_NAME in execution with pid |$_P"; return 1
+    [ ${_P:-0} -eq 0 ] && echo "$$|$(hostname -I)|$(date +'%Y-%m-%d %H:%M:%S')" > "$_FILE_RUN" && return 0
+	echo "[$_FILE_NAME] in execution with pid [$_P]"; return 1
 }
 _begin() {
 	__setInExec || exit 1
@@ -16,7 +17,7 @@ _end() {
 }
 
 _beginForce() {
-	#permite a execution, eliminando a anterior
+	#alow execution, before forced kill
 	_P=$(_getPID)
     [ ${_P:-0} -ne 0 ] && kill -9 $_P && _end
 	_begin
@@ -26,6 +27,32 @@ _getPID() {
 	[ ! -f "$_FILE_RUN" ] && echo 0 && return 1
     _P=$(cat "$_FILE_RUN" | cut -d'|' -f1) # pega o pid registrado para o processo
 	echo "$(ps -p ${_P:-xx} -o cmd= 2>/dev/null)" | fgrep -q "$_FILE_NAME" && echo $_P || echo 0
+}
+
+_checkRemoteExec() {
+	#check dependences
+	_checkDependences 'ssh' 'sshpass' || {
+		source /opt/scripts/libs/util.lib || exit
+		_checkDependences 'ssh' 'sshpass'
+	}
+	_import 'log'
+	#check files of another hosts
+	ls -1 $_DIR_RUN/${_FILE_NAME}_* | while read FILE; do
+		H=$(basename $FILE | sed "s/${_FILE_NAME}_//" | sed 's/\.pid$//' )
+		[ "$H" = "$HOSTNAME" ] && continue
+		IP=$(head -n1 $FILE | cut -d'|' -f2)
+		_P=$(head -n1 $FILE | cut -d'|' -f1)
+		_setVAR 'PASSWORD_SERVERS'
+		[ -z "$PASSWORD_SERVERS" ] && exit
+		PID_R=$(sshpass -p"$PASSWORD_SERVERS" ssh portela@$IP \
+			"ps -p ${_P:-xx} -o cmd= | fgrep -q $_FILE_NAME && echo $_P || echo 0")
+		[ ${PID_R:-0} -gt 0 ] && {
+			_log "execution in another host"
+			_log "$PID_R|$H|$IP"
+			return 0
+		}
+		return 1
+	done
 }
 
 _getTimePID() {
