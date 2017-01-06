@@ -42,9 +42,10 @@ _checkRemoteExec() {
 		[ "$H" = "$HOSTNAME" ] && continue
 		IP=$(head -n1 $FILE | cut -d'|' -f2)
 		_P=$(head -n1 $FILE | cut -d'|' -f1)
-		_setVAR 'PASSWORD_SERVERS'
-		[ -z "$PASSWORD_SERVERS" ] && exit
-		PID_R=$(sshpass -p"$PASSWORD_SERVERS" ssh portela@$IP \
+		_setVAR 'SERVER_PASSWORD'
+		_setVAR 'SERVER_USER'
+		[ -z "$SERVER_PASSWORD" -o -z "$SERVER_USER" ] && exit
+		PID_R=$(sshpass -p"$SERVER_PASSWORD" ssh ${SERVER_USER}@${IP} \
 			"ps -p ${_P:-xx} -o cmd= | fgrep -q $_FILE_NAME && echo $_P || echo 0")
 		[ ${PID_R:-0} -gt 0 ] && {
 			_log "execution in another host"
