@@ -1,7 +1,6 @@
 #!/bin/bash
 #By: Raimundo Portela <rai3mb@gmail.com>
 # atention: configs in /opt/scripts/scripts.conf
-_RS=''
 _CONF_FILE=/opt/scripts/scripts.conf
 _import() {
 	_setVAR 'DIR_LIBS'
@@ -28,7 +27,7 @@ _getVAR() {
 	echo "$1" | egrep -q '^DIR_' && {
 		[ ! -d "$V" ] && V=''
 	}
-	_RS="$V" && echo "$V"
+	echo "$V"
 }
 _dir() { [ -d "$1" ] && return 0 || _notFound "$1"; }
 _file() { [ -f "$1" ] && return 0 || _notFound "$1";}
@@ -43,3 +42,4 @@ _checkDependences() {
 		shift
 	done
 }
+_upper() {	tr '[a-z]' '[A-Z]'; }

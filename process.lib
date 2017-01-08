@@ -8,13 +8,9 @@ __setInExec() {
     [ ${_P:-0} -eq 0 ] && echo "$$|$(hostname -I)|$(date +'%Y-%m-%d %H:%M:%S')" > "$_FILE_RUN" && return 0
 	echo "[$_FILE_NAME] in execution with pid [$_P]"; return 1
 }
-_begin() {
-	__setInExec || exit 1
-}
 
-_end() {
-	[ -f "$_FILE_RUN" ] && rm "$_FILE_RUN"
-}
+_begin() {	__setInExec || exit 1; }
+_end() { [ -f "$_FILE_RUN" ] && rm "$_FILE_RUN"; }
 
 _beginForce() {
 	#alow execution, before forced kill
@@ -31,9 +27,9 @@ _getPID() {
 
 _checkRemoteExec() {
 	#check dependences
-	_checkDependences 'ssh' 'sshpass' || {
+	_checkDependences 'sshpass' || {
 		source /opt/scripts/libs/util.lib || exit
-		_checkDependences 'ssh' 'sshpass'
+		_checkDependences 'sshpass'
 	}
 	_import 'log'
 	#check files of another hosts
@@ -42,24 +38,19 @@ _checkRemoteExec() {
 		[ "$H" = "$HOSTNAME" ] && continue
 		IP=$(head -n1 $FILE | cut -d'|' -f2)
 		_P=$(head -n1 $FILE | cut -d'|' -f1)
-		_setVAR 'SERVER_PASSWORD'
-		_setVAR 'SERVER_USER'
+		H=$(echo $H | _upper)
+		SERVER_USER=$(_getVAR "${H}_USER")
+		SERVER_PASSWORD=$(_getVAR "${H}_PASSWORD")
 		[ -z "$SERVER_PASSWORD" -o -z "$SERVER_USER" ] && exit
 		PID_R=$(sshpass -p"$SERVER_PASSWORD" ssh ${SERVER_USER}@${IP} \
 			"ps -p ${_P:-xx} -o cmd= | fgrep -q $_FILE_NAME && echo $_P || echo 0")
 		[ ${PID_R:-0} -gt 0 ] && {
-			_log "execution in another host"
-			_log "$PID_R|$H|$IP"
+			_log "execution in another host|$PID_R|$H|$IP"
 			return 0
 		}
 		return 1
 	done
 }
 
-_getTimePID() {
-	ps -p $(_getPID) -o time=
-}
-
-_checkInExec() {
-	[ $(_getPID) -eq 0 ] && return 1 || return 0
-}
+_getTimePID() {	ps -p $(_getPID) -o time= ; }
+_checkInExec() { [ $(_getPID) -eq 0 ] && return 1 || return 0; }
