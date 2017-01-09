@@ -48,8 +48,8 @@ _checkRemoteExec() {
 			_log "execution in another host|$PID_R|$H|$IP"
 			return 0
 		}
-		return 1
 	done
+	return 1
 }
 
 _getTimePID() {	ps -p $(_getPID) -o time= ; }
