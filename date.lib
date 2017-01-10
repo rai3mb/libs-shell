@@ -1,4 +1,5 @@
 #!/bin/bash
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
 _date() { _now | cut -d' ' -f1; }
-_dateNum() { date +'%Y%m%d'; }
+_dateNumPast() { date +'%Y%m%d' -d "-${1:-0} day"; }
+_dateNum() { _dateNumPast; }
