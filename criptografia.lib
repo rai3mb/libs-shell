@@ -1,5 +1,5 @@
 #!/bin/bash
-#lib for encoding/deconding string for definition
+#lib for encoding/deconding string by definition
 # _setVAR 'CRIPTO_BASE' in /opt/scripts/scripts.conf
 #=====================================
 [ -z "$_CRIPTO_BASE" ] && {
