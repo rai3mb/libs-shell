@@ -9,42 +9,43 @@
     }
     [ -z "$CRIPTO_BASE" ] && exit || _CRIPTO_BASE="$CRIPTO_BASE"
 }
-_AZNUM="$(echo {A..Z} {0..9})"
+_AZNUM="$(echo {a..z} {0..9})"
 __posCHAR() {
     i=0
-    echo "$2" | tr ' ' '\n' | while read CHAR; do
-        [ "$1" = "$CHAR" ] && echo "$i" && return 0
+    R=1
+    while read CHAR; do
+        [ "$1" = "$CHAR" ] && echo "$i" && R=0 && break
         let i++
-    done
-    return 1
+    done < <(echo "$2" | tr ' ' '\n')
+    return $R
 }
 _criptoPos() {
-    __posCHAR "$1" "$_AZNUM"
+    __posCHAR "$1" "$_AZNUM" && return 0 || return 1
 }
 _criptoPosCifra() {
-    __posCHAR "$1" "$_CRIPTO_BASE"
+    __posCHAR "$1" "$_CRIPTO_BASE" && return 0 || return 1
 }
 
 _criptoDec() {
-    local A="$(echo $1 | _upper)"
+    local A="$1"
     local BASE="$(echo $_AZNUM | tr -d ' ')"
     local TROC=''
     for ((i=0;i<${#A};i++)); do
         #position
         x=$(_criptoPosCifra "${A:$i:1}")
-        TROC="${TROC}${BASE:$x:1}"
+        [ $? -ne 0 ] && TROC="${TROC}${A:$i:1}" || TROC="${TROC}${BASE:$x:1}"
     done
     echo "$TROC"
 }
 
 _criptoEnc() {
-    local A="$(echo $1 | _upper)"
+    local A="$1"
     local CIFRA="$(echo $_CRIPTO_BASE | tr -d ' ')"
     local TROC=''
     for ((i=0;i<${#A};i++)); do
         #position
         x=$(_criptoPos "${A:$i:1}")
-        TROC="${TROC}${CIFRA:$x:1}"
+        [ $? -ne 0 ] && TROC="${TROC}${A:$i:1}" || TROC="${TROC}${CIFRA:$x:1}"
     done
     echo "$TROC"
 }

@@ -42,4 +42,5 @@ _checkDependences() {
 		shift
 	done
 }
-_upper() {	tr '[a-z]' '[A-Z]'; }
+_upper() { tr '[a-z]' '[A-Z]'; }
+_lower() { tr '[A-Z]' '[a-z]'; }
