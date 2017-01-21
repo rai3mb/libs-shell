@@ -1,0 +1,4 @@
+#!/bin/bash
+_getCPU() {
+	top -bn 2 -d 0.01 | grep '^%Cpu.s.' | tail -n1 | gawk '{print $2+$4+$6}' | cut -d '.' -f1
+}
