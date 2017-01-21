@@ -1,0 +1,26 @@
+#!/bin/bash
+_setVAR 'MQ_SERVER' 2>/dev/null || {
+    source /opt/scripts/libs/util.lib || exit
+    _setVAR 'MQ_SERVER'
+}
+
+_mqCount() {
+    local f="$1"
+    amqutil count --host "$MQ_SERVER" --destination "$f"
+}
+
+_mqConsume() {
+    local f="$1"
+    local QTD_CONSUME=${2:-1}
+    amqutil consume $QTD_CONSUME --host "$MQ_SERVER" --destination "$f" --format textonly
+}
+
+_mqProduce() {
+    local f="$1"
+    local m="$2"
+    if [ ${#m} -gt 0 ]; then
+        echo "$m" > /tmp/mq.$$
+        amqutil produce 1 --host "$MQ_SERVER" --destination "$f" --msgtype text --file /tmp/mq.$$
+        rm /tmp/mq.$$
+    fi
+}
