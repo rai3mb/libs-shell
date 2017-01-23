@@ -15,12 +15,28 @@ _mqConsume() {
     amqutil consume $QTD_CONSUME --host "$MQ_SERVER" --destination "$f" --format textonly
 }
 
+_mqSubscribe() {
+    local f="$1"
+    local QTD_CONSUME=${2:-1}
+    amqutil subscribe $QTD_CONSUME --host "$MQ_SERVER" --destination "$f" --durable "$HOSTNAME" --format textonly
+}
+
 _mqProduce() {
     local f="$1"
     local m="$2"
     if [ ${#m} -gt 0 ]; then
         echo "$m" > /tmp/mq.$$
         amqutil produce 1 --host "$MQ_SERVER" --destination "$f" --msgtype text --file /tmp/mq.$$
+        rm /tmp/mq.$$
+    fi
+}
+
+_mqPublish() {
+    local f="$1"
+    local m="$2"
+    if [ ${#m} -gt 0 ]; then
+        echo "$m" > /tmp/mq.$$
+        amqutil publish 1 --host "$MQ_SERVER" --destination "$f" --msgtype text --file /tmp/mq.$$
         rm /tmp/mq.$$
     fi
 }

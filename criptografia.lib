@@ -4,7 +4,7 @@
 #=====================================
 [ -z "$_CRIPTO_BASE" ] && {
     _setVAR 'CRIPTO_BASE' 2>/dev/null || {
-        source /opt/scripts/libs/util.lib
+        source /opt/scripts/libs/util.lib || exit
         _setVAR 'CRIPTO_BASE'
     }
     [ -z "$CRIPTO_BASE" ] && exit || _CRIPTO_BASE="$CRIPTO_BASE"
