@@ -3,6 +3,13 @@ _checkDependences 'gawk' 2>/dev/null || {
 	source /opt/scripts/libs/util.lib && _checkDependences 'gawk' || exit
 }
 
-_getCPU() {
+_cpu() {
 	top -bn 2 -d 0.01 | grep '^%Cpu.s.' | tail -n1 | gawk '{print $2+$4+$6}' | cut -d '.' -f1
+}
+
+_cpuCheck() {
+	local C=$(_cpu)
+	local M=${1:-70}
+	local T=${2:-3}
+	[ ${C:-99} -gt $M ] && echo "carga alta [$C/$M], esperando [$T]..." && sleep "$T"
 }

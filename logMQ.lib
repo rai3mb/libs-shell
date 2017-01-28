@@ -1,7 +1,8 @@
 #!/bin/bash
 _import 'amq' 'date' 2>/dev/null || {
-    source /opt/scripts/libs/util.lib && _import 'amq' || exit
+    source /opt/scripts/libs/util.lib && _import 'amq' 'date' || exit
 }
+
 _logMQ() {
     _mqPublish 'logs' "$HOSTNAME|$(basename $0)|$(_now)|$1"
 }
