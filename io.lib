@@ -1,0 +1,2 @@
+#!/bin/bash
+_mkdir() { [ ! -d "$1" ] && mkdir -p "$1" && chmod 2777 "$1"; }

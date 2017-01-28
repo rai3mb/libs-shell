@@ -1,42 +1,41 @@
 #!/bin/bash
-_setVAR 'MQ_SERVER' 2>/dev/null || {
+_setVAR 'MQ_SERVER' && _checkDependences 'amqutil' || {
     source /opt/scripts/libs/util.lib || exit
     _setVAR 'MQ_SERVER'
+    _checkDependences 'amqutil'
 }
-
 _mqCount() {
     local f="$1"
     amqutil count --host "$MQ_SERVER" --destination "$f"
 }
-
+#queue
 _mqConsume() {
     local f="$1"
     local QTD_CONSUME=${2:-1}
     amqutil consume $QTD_CONSUME --host "$MQ_SERVER" --destination "$f" --format textonly
 }
-
+#topic
 _mqSubscribe() {
     local f="$1"
     local QTD_CONSUME=${2:-1}
     amqutil subscribe $QTD_CONSUME --host "$MQ_SERVER" --destination "$f" --durable "$HOSTNAME" --format textonly
 }
 
-_mqProduce() {
-    local f="$1"
-    local m="$2"
+__mqpp() {
+    [ -z "$2" ] && exit
+    local f="$2"
+    local m="$3"
     if [ ${#m} -gt 0 ]; then
         echo "$m" > /tmp/mq.$$
-        amqutil produce 1 --host "$MQ_SERVER" --destination "$f" --msgtype text --file /tmp/mq.$$
+        amqutil "${1:-produce}" 1 --host "$MQ_SERVER" --destination "$f" --msgtype text --file /tmp/mq.$$
         rm /tmp/mq.$$
     fi
 }
-
+#queue
+_mqProduce() {
+    __mqpp 'produce' "$1" "$2"
+}
+#topic
 _mqPublish() {
-    local f="$1"
-    local m="$2"
-    if [ ${#m} -gt 0 ]; then
-        echo "$m" > /tmp/mq.$$
-        amqutil publish 1 --host "$MQ_SERVER" --destination "$f" --msgtype text --file /tmp/mq.$$
-        rm /tmp/mq.$$
-    fi
+    __mqpp 'publish' "$1" "$2"
 }

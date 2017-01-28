@@ -1,12 +1,12 @@
 #!/bin/bash
 #By: Raimundo Portela <rai3mb@gmail.com>
-_import 'date' 2>/dev/null || {
-    source /opt/scripts/libs/util.lib && _import 'date' || return 1
+_import 'date' 'io' 2>/dev/null || {
+    source /opt/scripts/libs/util.lib && _import 'date' 'io' || exit 1
 }
 HOJE=$(_dateNum)
 _setVAR 'DIR_LOGS'
 _DIR_LOG="$DIR_LOGS/$HOJE" # directory for logs
-[ ! -d $_DIR_LOG ] && mkdir -p $_DIR_LOG && chmod 2777 $_DIR_LOG # cria o diretorio de logs
+_mkdir $_DIR_LOG # cria o diretorio de logs
 
 _LOG_DESTINO=$_DIR_LOG/$(basename "$0")_${HOSTNAME}_$HOJE.log # arquivo de log para o script corrent
 exec 2> >(tee -a "$_LOG_DESTINO") # copia a saida de erros para o arquivo

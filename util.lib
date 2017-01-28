@@ -11,6 +11,8 @@ _import() {
 		shift
 	done
 }
+_dir() { [ -d "$1" ] || _notFound "$1"; }
+_file() { [ -f "$1" ] || _notFound "$1"; }
 _source() { _file "$1" && source "$1"; }
 _setVAR() { eval "${1}='$(_getVAR $1)'"; }
 _getParam() {
@@ -29,8 +31,6 @@ _getVAR() {
 	}
 	echo "$V"
 }
-_dir() { [ -d "$1" ] && return 0 || _notFound "$1"; }
-_file() { [ -f "$1" ] && return 0 || _notFound "$1";}
 _notFound() { _die "not found : [$1]"; }
 _die() { echo -e "\n===[ERROR]===\n${1}\n===[ERROR]===\n"; _killMe; }
 _killMe() { kill -15 $$; }
