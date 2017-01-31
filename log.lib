@@ -12,6 +12,10 @@ _LOG_DESTINO=$_DIR_LOG/$(basename "$0")_${HOSTNAME}_$HOJE.log # arquivo de log p
 exec 2> >(tee -a "$_LOG_DESTINO") # copia a saida de erros para o arquivo
 
 # funcao para registrar comentarios no log
-_log() {
+_logFile() {
     echo "$(_now)|$1" >> $_LOG_DESTINO
+}
+
+_log() {
+    _logFile "$1"
 }

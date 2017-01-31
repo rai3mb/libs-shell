@@ -2,12 +2,14 @@
 #By: Raimundo Portela <rai3mb@gmail.com>
 # atention: configs in /opt/scripts/scripts.conf
 _CONF_FILE=/opt/scripts/scripts.conf
+__LIST_LIBS=''
 _import() {
 	_setVAR 'DIR_LIBS'
 	_dir "$DIR_LIBS"
 	while : ; do
 		[ -z "$1" ] && break
-		_source "$DIR_LIBS/${1}.lib"
+		echo $__LIST_LIBS | fgrep -q "${1};" && shift && continue
+		_source "$DIR_LIBS/${1}.lib" && __LIST_LIBS="${1};$__LIST_LIBS"
 		shift
 	done
 }

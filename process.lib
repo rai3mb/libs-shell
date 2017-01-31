@@ -1,4 +1,12 @@
 #!/bin/bash
+#===========================
+#check dependences
+_checkDependences 'sshpass' || {
+	source /opt/scripts/libs/util.lib || exit
+	_checkDependences 'sshpass'
+}
+_import 'log'
+
 _FILE_NAME=$(basename $0)
 _DIR_RUN=/opt/scripts/run
 _FILE_RUN=$_DIR_RUN/${_FILE_NAME}_${HOSTNAME}.pid
@@ -26,12 +34,6 @@ _getPID() {
 }
 
 _checkRemoteExec() {
-	#check dependences
-	_checkDependences 'sshpass' || {
-		source /opt/scripts/libs/util.lib || exit
-		_checkDependences 'sshpass'
-	}
-	_import 'log'
 	#check files of another hosts
 	ls -1 $_DIR_RUN/${_FILE_NAME}_* | while read FILE; do
 		H=$(basename $FILE | sed "s/${_FILE_NAME}_//" | sed 's/\.pid$//' )

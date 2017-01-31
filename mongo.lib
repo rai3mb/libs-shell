@@ -42,7 +42,3 @@ _mongoInsertOrReplace() {
 	RS=$(_mongoFind $COLECAO $ALVO)
 	[ "$RS" ] && _mongoReplace $COLECAO $ALVO "$DOCUMENTO" || _mongoInsert $COLECAO "$DOCUMENTO"
 }
-
-_getValor() {
-	_mongoFind "$1" "$2" | jq .${3} | sed 's/"//g'
-}
