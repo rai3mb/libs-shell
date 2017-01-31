@@ -1,6 +1,6 @@
 #!/bin/bash
 # By: Portela <c089612@mail.caixa>
-# Need: jq, mongo
+# Need: mongo
 #==================================================
 _checkDependences 'mongo' 2>/dev/null || {
 	source /opt/scripts/libs/util.lib && _checkDependences 'mongo' || return 1

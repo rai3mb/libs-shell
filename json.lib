@@ -12,17 +12,18 @@ _jsonGetVal() {
     echo ${temp##*|}
 }
 
-_jsonStartList() {
-    echo "[" > /tmp/${1}.jsonlist
+_jsonCountList() {
+    egrep "^{" /tmp/${1}.jsonlist | wc -l
 }
 
 _jsonAddList() {
+    [ ! -f /tmp/${1}.jsonlist ] && echo "[" > /tmp/${1}.jsonlist
     echo "$2" >> /tmp/${1}.jsonlist
     echo "," >> /tmp/${1}.jsonlist
 }
 
 _jsonGetList() {
-    __JSON=$(cat /tmp/${1}.jsonlist)
-    echo "${__JSON:0:$((${#__JSON}-1))}]"
+    local json=$(cat /tmp/${1}.jsonlist)
+    echo "${json:0:$((${#json}-1))}]"
     rm /tmp/${1}.jsonlist
 }
