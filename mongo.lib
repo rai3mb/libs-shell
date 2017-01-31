@@ -6,7 +6,7 @@ _checkDependences 'mongo' 2>/dev/null || {
 	source /opt/scripts/libs/util.lib && _checkDependences 'mongo' || return 1
 }
 _setVAR 'MONGO_PROD'
-_MONGO_URI="mongo $_RS --quiet --eval"
+_MONGO_URI="mongo $MONGO_PROD --quiet --eval"
 _setMongoURI() {
 	[ "$1" ] && _MONGO_URI="mongo $1 --quiet --eval" || return 1
 }
