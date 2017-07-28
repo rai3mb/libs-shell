@@ -8,6 +8,7 @@ VIDEO="$1"
 _file "$VIDEO"
 START="$2"
 END="$3"
-QTD=$(( $(echo $VIDEO | tr '.' '\n' | wc -l) -1 ))
+NAME=$(basename "$VIDEO")
+QTD_PONTOS=$(( $(ls "$NAME" | tr '.' '\n' | wc -l) -1 ))
 ffmpeg -i "$VIDEO" -vcodec copy -acodec copy -ss $START -t $END \
-    "$( echo $VIDEO | cut -d'.' -f1-${QTD} )"_part0${4:-1}.${VIDEO/*.}
+    "$( echo $NAME | cut -d'.' -f1-${QTD_PONTOS} )"_part0${4:-1}.${NAME/*.}

@@ -5,7 +5,7 @@ _checkDependences 'sshpass' || {
 	source /opt/scripts/libs/util.lib || exit
 	_checkDependences 'sshpass'
 }
-_import 'log'
+_import 'log' 'string' 'criptografia'
 
 _FILE_NAME=$(basename $0)
 _DIR_RUN=/opt/scripts/run
@@ -43,6 +43,9 @@ _checkRemoteExec() {
 		H=$(echo $H | _upper)
 		SERVER_USER=$(_getVAR "${H}_USER")
 		SERVER_PASSWORD=$(_getVAR "${H}_PASSWORD")
+		echo $SERVER_PASSWORD
+		SERVER_PASSWORD=$(_criptoDec $SERVER_PASSWORD)
+		echo $SERVER_PASSWORD
 		[ -z "$SERVER_PASSWORD" -o -z "$SERVER_USER" ] && exit
 		PID_R=$(sshpass -p"$SERVER_PASSWORD" ssh ${SERVER_USER}@${IP} \
 			"ps -p ${_P:-xx} -o cmd= | fgrep -q $_FILE_NAME && echo $_P || echo 0")

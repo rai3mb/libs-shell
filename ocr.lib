@@ -1,0 +1,24 @@
+#!/bin/bash
+#https://github.com/tesseract-ocr/tesseract
+#=============================================================
+_checkDependences 'tesseract' 2>/dev/null || {
+    source /opt/scripts/libs/util.lib && _checkDependences 'tesseract' || return 1
+}
+
+_setVAR 'DIR_LIBS'
+
+_ocr() {
+    local F="$1"
+    _file "$F"
+    tesseract -l por "$F"
+}
+
+_ocrGetVal() {
+    local F="$1"
+    local V="$2"
+    _ocr "$F"
+    EX=$(egrep ^${V} $DIR_LIBS/ocr.regex | cut -d'=' -f2-)
+    echo "$1" | egrep "$EX"
+}
+
+

@@ -16,7 +16,13 @@ _import() {
 _dir() { [ -d "$1" ] || _notFound "$1"; }
 _file() { [ -f "$1" ] || _notFound "$1"; }
 _source() { _file "$1" && source "$1"; }
-_setVAR() { eval "${1}='$(_getVAR $1)'"; }
+_setVAR() { 
+	while : ; do
+		[ -z "$1" ] && break
+		eval "${1}='$(_getVAR $1)'";
+		shift
+	done
+}
 _getParam() {
 	X="$1"
 	while shift; do
